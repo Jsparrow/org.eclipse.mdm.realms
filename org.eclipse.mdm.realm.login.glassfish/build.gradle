@@ -1,0 +1,59 @@
+/*******************************************************************************
+  * Copyright (c) 2016 Gigatronik Ingolstadt GmbH
+  * All rights reserved. This program and the accompanying materials
+  * are made available under the terms of the Eclipse Public License v1.0
+  * which accompanies this distribution, and is available at
+  * http://www.eclipse.org/legal/epl-v10.html
+  *
+  * Contributors:
+  * Sebastian Dirsch - initial configuration
+  *******************************************************************************/
+
+description = 'MDM I18N'
+group = 'org.eclipse.mdm'
+version = '1.0.0'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+repositories {
+
+	maven {
+        url "https://maven.java.net/content/repositories/staging"
+    }
+
+	mavenLocal()
+	mavenCentral()
+}
+
+
+
+dependencies {
+
+	compile 'javax:javaee-api:7.0'
+   
+    compile 'org.eclipse.mdm:org.eclipse.mdm.api.base:1.0.0'
+   	compile 'org.eclipse.mdm:org.eclipse.mdm.connector:1.0.0'
+   	
+    compile 'org.glassfish.main.deployment:deployment-common:4.1.1'      
+	compile 'org.glassfish.main.security:security:4.1.1'
+ 	compile	'org.glassfish.main.common:glassfish-ee-api:4.1.1'
+	
+	testCompile 'org.mockito:mockito-core:1.+'
+	testCompile 'junit:junit:4.12'
+}
+
+
+task installRealm(type: Jar) {
+  	manifest.from jar.manifest
+   	from {
+  		configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+    } 
+   
+    with jar
+  }
+
+
