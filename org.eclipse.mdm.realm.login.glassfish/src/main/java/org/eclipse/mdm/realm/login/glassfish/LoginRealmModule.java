@@ -24,8 +24,7 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
 import org.eclipse.mdm.api.base.EntityManager;
-import org.eclipse.mdm.connector.ConnectorBeanLI;
-import org.eclipse.mdm.connector.ConnectorException;
+import org.eclipse.mdm.connector.boundary.ConnectorService;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.Group;
 
@@ -40,8 +39,6 @@ import com.sun.enterprise.security.auth.realm.Realm;
  *
  */
 public class LoginRealmModule implements LoginModule {
-
-	
 	
 	private final static String MDM_GROUP = "MDM";
 	
@@ -56,7 +53,7 @@ public class LoginRealmModule implements LoginModule {
 	private boolean phase1Succeeded = false;
 	private boolean phase2Succeeded = false;
 	
-	private ConnectorBeanLI connectorBean;
+	private ConnectorService connectorService;
 	private List<EntityManager> emList;
 	
 	
@@ -64,7 +61,6 @@ public class LoginRealmModule implements LoginModule {
 	@Override
 	public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
 			Map<String, ?> options) {
-		
 		this.subject = subject;		
 	}
 
@@ -73,19 +69,18 @@ public class LoginRealmModule implements LoginModule {
 	@Override
 	public boolean login() throws LoginException {		
 		try {		
-			
 			PasswordCredential passwordCredential = lookupPasswordCredential(this.subject);
 			
 			this.realm = passwordCredential.getRealm();
 			this.username = passwordCredential.getUser();
 			this.password = String.valueOf(passwordCredential.getPassword());
 					
-			ConnectorBeanLI connector = getConnector();
+			ConnectorService connector = getConnector();
 			this.emList = connector.connect(this.username, this.password);
 		
 			this.phase1Succeeded = true;
 			
-		} catch(ConnectorException e) {
+		} catch(RuntimeException e) {
 			throw new LoginException(e.getMessage());
 		}				
 		return true;
@@ -119,7 +114,7 @@ public class LoginRealmModule implements LoginModule {
 					principalSet.add(this.group);
 				}
 				
-				ConnectorBeanLI connector = getConnector();
+				ConnectorService connector = getConnector();
 				connector.registerConnections(this.principal, this.emList);
 				
 				this.phase2Succeeded = true;
@@ -128,7 +123,7 @@ public class LoginRealmModule implements LoginModule {
 			}
 			
 			return true;
-		} catch(ConnectorException e) {
+		} catch(RuntimeException e) {
 			throw new LoginException(e.getMessage());
 		} finally {			
 			this.username = null;
@@ -161,8 +156,8 @@ public class LoginRealmModule implements LoginModule {
 	@Override
 	public boolean logout() throws LoginException {
 		
-		ConnectorBeanLI connectorBean = getConnector();
-		connectorBean.disconnect(this.principal);
+		ConnectorService connectorService = getConnector();
+		connectorService.disconnect(this.principal);
 		
 		this.emList.clear();
 	    
@@ -217,16 +212,18 @@ public class LoginRealmModule implements LoginModule {
 		
 	
 	
-	private ConnectorBeanLI getConnector() throws LoginException {
+	private ConnectorService getConnector() throws LoginException {
 		try {
-			if(this.connectorBean == null) {
-				String JNDIName = "java:global/org.eclipse.mdm.application-1.0.0/ConnectorBean!org.eclipse.mdm.connector.ConnectorBeanLI";
+			if(this.connectorService == null) {
+				String JNDIName = "java:global/org.eclipse.mdm.nucleus/ConnectorService!org.eclipse.mdm.connector.boundary.ConnectorService";
 				InitialContext initialContext = new InitialContext();		
-				this.connectorBean = (ConnectorBeanLI) initialContext.lookup(JNDIName); 
+				this.connectorService = (ConnectorService) initialContext.lookup(JNDIName); 
 			}
-			return this.connectorBean;
+			return this.connectorService;
 		} catch(NamingException e) {
 			throw new LoginException(e.getMessage());
 		}
 	}
+
+
 }

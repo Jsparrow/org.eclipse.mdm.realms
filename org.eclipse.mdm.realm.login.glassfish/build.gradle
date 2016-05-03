@@ -9,11 +9,10 @@
   * Sebastian Dirsch - initial configuration
   *******************************************************************************/
 
-description = 'MDM I18N'
+description = 'glassfish username/password login realm implementation'
 group = 'org.eclipse.mdm'
 version = '1.0.0'
 apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'maven'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -35,22 +34,18 @@ dependencies {
 
 	compile 'javax:javaee-api:7.0'
    
-    compile 'org.eclipse.mdm:org.eclipse.mdm.api.base:1.0.0'
+	compile 'org.eclipse.mdm:org.eclipse.mdm.api.base:1.0.0'
    	compile 'org.eclipse.mdm:org.eclipse.mdm.connector:1.0.0'
-   	
-    compile 'org.glassfish.main.deployment:deployment-common:4.1.1'      
-	compile 'org.glassfish.main.security:security:4.1.1'
- 	compile	'org.glassfish.main.common:glassfish-ee-api:4.1.1'
+
+	compile	'org.glassfish.main.common:glassfish-ee-api:4.1.1'
 	
-	testCompile 'org.mockito:mockito-core:1.+'
-	testCompile 'junit:junit:4.12'
 }
 
 
 task installRealm(type: Jar) {
   	manifest.from jar.manifest
    	from {
-  		configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+ 		configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
     } 
    
     with jar
