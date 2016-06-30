@@ -10,13 +10,8 @@ http://www.eclipse.org/legal/epl-v10.html
 
 ## 1. Glassfish Login Realm (org.eclipse.mdm.realm.login.glassfish)
 
-Before you can install and build the realm, you have to checkout and install: (gradlew install)
-* org.eclipse.mdm.api.base
-* org.eclipse.mdm.api.default
-* org.eclipse.mdm.api.odsadapter
-* org.eclipse.mdm.nucleus (see also README.md)
   
-The command 'gradlew installRealm' at org.eclipse.mdm.realms/org.eclipse.mdm.realm.login.glassfish creates the jar file for this login module.
+The command 'gradlew install' at org.eclipse.mdm.realms/org.eclipse.mdm.realm.login.glassfish creates the jar file for this login module.
 
 The jar file will be generated at **org.eclipse.mdm.realms/org.eclipse.mdm.realm.login.glassfish/build/libs/org.eclipse.mdm.realm.login.glassfish-1.0.0.jar**
 
@@ -40,6 +35,8 @@ The jar file will be generated at **org.eclipse.mdm.realms/org.eclipse.mdm.realm
   
 	**Name:** MDMLoginRealm, **Class Name:** org.eclipse.mdm.realm.login.glassfish.LoginRealm _(choose a specific class name (with radio button))_
 	
-	**add Property:** **Name:** jaas-context, **Value:** MDMLoginRealm 
+	**add Property:** **Name:** jaas-context, **Value:** MDMLoginRealm   
+
+* **activate single sign on** at Configurations/server-config/Virtual Servers/server (SSO = Enabled)      
   
 * **save and restart** the Glassfish application server

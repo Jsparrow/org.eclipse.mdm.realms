@@ -34,22 +34,8 @@ repositories {
 dependencies {
 
 	compile 'javax:javaee-api:7.0'
-   
-	compile 'org.eclipse.mdm:org.eclipse.mdm.api.default:1.0.0'
-   	compile 'org.eclipse.mdm:org.eclipse.mdm.connector:1.0.0'
-
-	compile	'org.glassfish.main.common:glassfish-ee-api:4.1.1'
+   	compile	'org.glassfish.main.common:glassfish-ee-api:4.1.1'
 	
 }
-
-
-task installRealm(type: Jar) {
-  	manifest.from jar.manifest
-   	from {
- 		configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
-    } 
-   
-    with jar
-  }
 
 

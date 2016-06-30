@@ -11,6 +11,8 @@
 
 package org.eclipse.mdm.realm.login.glassfish;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +25,6 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.eclipse.mdm.api.dflt.EntityManager;
-import org.eclipse.mdm.connector.boundary.ConnectorService;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.Group;
 
@@ -53,8 +53,8 @@ public class LoginRealmModule implements LoginModule {
 	private boolean phase1Succeeded = false;
 	private boolean phase2Succeeded = false;
 	
-	private ConnectorService connectorService;
-	private List<EntityManager> emList;
+	private Object connector = null;
+	private Object entityManagerList = null;
 	
 	
 	
@@ -75,12 +75,12 @@ public class LoginRealmModule implements LoginModule {
 			this.username = passwordCredential.getUser();
 			this.password = String.valueOf(passwordCredential.getPassword());
 					
-			ConnectorService connector = getConnector();
-			this.emList = connector.connect(this.username, this.password);
-		
+			Object connectorService = getConnector();
+			Method connectionMethod = connector.getClass().getMethod("connect", String.class, String.class);
+			this.entityManagerList = connectionMethod.invoke(connectorService, username, password);		
 			this.phase1Succeeded = true;
 			
-		} catch(RuntimeException e) {
+		} catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException | RuntimeException e) {
 			throw new LoginException(e.getMessage());
 		}				
 		return true;
@@ -88,6 +88,7 @@ public class LoginRealmModule implements LoginModule {
 
 	
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean commit() throws LoginException {
 		
@@ -97,7 +98,7 @@ public class LoginRealmModule implements LoginModule {
 				return false;
 			}
 	
-			if(this.emList != null && this.emList.size() > 0) {
+			if(this.entityManagerList != null && ((List<Object>)this.entityManagerList).size() > 0) {
 				
 				PrincipalGroupFactory factory = Globals.getDefaultHabitat().getService(PrincipalGroupFactory.class);
 				
@@ -114,8 +115,9 @@ public class LoginRealmModule implements LoginModule {
 					principalSet.add(this.group);
 				}
 				
-				ConnectorService connector = getConnector();
-				connector.registerConnections(this.principal, this.emList);
+				Object connectorService = getConnector();
+				Method regConnectionMethod = connector.getClass().getMethod("registerConnections", Principal.class, List.class);
+				regConnectionMethod.invoke(connectorService, this.principal, this.entityManagerList);
 				
 				this.phase2Succeeded = true;
 			} else {
@@ -123,7 +125,7 @@ public class LoginRealmModule implements LoginModule {
 			}
 			
 			return true;
-		} catch(RuntimeException e) {
+		} catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException | RuntimeException e) {
 			throw new LoginException(e.getMessage());
 		} finally {			
 			this.username = null;
@@ -153,27 +155,35 @@ public class LoginRealmModule implements LoginModule {
 
 	
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean logout() throws LoginException {
 		
-		ConnectorService connectorService = getConnector();
-		connectorService.disconnect(this.principal);
+		try {
 		
-		this.emList.clear();
-	    
-		this.subject.getPrincipals().clear();
-	    this.subject.getPublicCredentials().clear();
-	    this.subject.getPrivateCredentials().clear();
-	    
-	    this.username = null;
-		this.password = null;
-		this.principal = null;
-		this.group = null;
-	    
-	    this.phase1Succeeded = false;
-	    this.phase2Succeeded = false;
-	    
-		return true;
+			Object connectorService = getConnector();
+			Method disconnectMethod = connectorService.getClass().getMethod("disconnect", Principal.class);
+			disconnectMethod.invoke(connectorService, this.principal);
+			
+			((List<Object>)this.entityManagerList).clear();
+		    
+			this.subject.getPrincipals().clear();
+		    this.subject.getPublicCredentials().clear();
+		    this.subject.getPrivateCredentials().clear();
+		    
+		    this.username = null;
+			this.password = null;
+			this.principal = null;
+			this.group = null;
+		    
+		    this.phase1Succeeded = false;
+		    this.phase2Succeeded = false;
+		    
+			return true;
+			
+		} catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException | RuntimeException e) {
+			throw new LoginException(e.getMessage());
+		}
 	}
 
 	
@@ -212,14 +222,14 @@ public class LoginRealmModule implements LoginModule {
 		
 	
 	
-	private ConnectorService getConnector() throws LoginException {
+	private Object getConnector() throws LoginException {
 		try {
-			if(this.connectorService == null) {
+			if(this.connector == null) {
 				String JNDIName = "java:global/org.eclipse.mdm.nucleus/ConnectorService!org.eclipse.mdm.connector.boundary.ConnectorService";
 				InitialContext initialContext = new InitialContext();		
-				this.connectorService = (ConnectorService) initialContext.lookup(JNDIName); 
+				this.connector = initialContext.lookup(JNDIName); 
 			}
-			return this.connectorService;
+			return this.connector;
 		} catch(NamingException e) {
 			throw new LoginException(e.getMessage());
 		}
