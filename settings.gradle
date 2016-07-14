@@ -7,6 +7,8 @@
   *
   * Contributors:
   * Sebastian Dirsch - initial configuration
-  *******************************************************************************/
-  
-rootProject.name = 'org.eclipse.mdm.realm.login.glassfish'
+  *******************************************************************************/ 
+ 
+rootProject.name = 'org.eclipse.mdm.realms'
+
+include 'org.eclipse.mdm.realm.login.glassfish'

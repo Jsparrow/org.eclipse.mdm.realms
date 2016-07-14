@@ -8,10 +8,11 @@ http://www.eclipse.org/legal/epl-v10.html
  
 ## available realms
 
+
+
 ## 1. Glassfish Login Realm (org.eclipse.mdm.realm.login.glassfish)
 
-  
-The command 'gradlew install' at org.eclipse.mdm.realms/org.eclipse.mdm.realm.login.glassfish creates the jar file for this login module.
+The command 'gradlew install' at org.eclipse.mdm.realms creates the jar file for this login module.
 
 The jar file will be generated at **org.eclipse.mdm.realms/org.eclipse.mdm.realm.login.glassfish/build/libs/org.eclipse.mdm.realm.login.glassfish-1.0.0.jar**
 
