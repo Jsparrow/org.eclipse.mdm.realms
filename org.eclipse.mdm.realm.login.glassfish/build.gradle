@@ -32,10 +32,7 @@ repositories {
 
 
 dependencies {
-
-	compile 'javax:javaee-api:7.0'
-   	compile	'org.glassfish.main.common:glassfish-ee-api:4.1.1'
-	
+   	compileOnly	'org.glassfish.main.common:glassfish-ee-api:4.1.1'	
 }
 
 
