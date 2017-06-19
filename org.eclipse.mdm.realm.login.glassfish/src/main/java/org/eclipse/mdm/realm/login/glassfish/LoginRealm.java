@@ -27,30 +27,22 @@ import com.sun.enterprise.security.auth.realm.NoSuchUserException;
  */
 public class LoginRealm extends AppservRealm {
 
-	
-	
 	private final static String JAAS_CONTEXT = "jaas-context";
 	private final static String AUTH_TYPE = "WebAuthorization";
-	
-	
-	
+
 	@Override
 	public String getAuthType() {
 		return AUTH_TYPE;
 	}
 
-	
-	
 	@Override
 	public Enumeration<?> getGroupNames(String username) throws InvalidOperationException, NoSuchUserException {
 		return null;
 	}
-	
-	
-	
+
 	@Override
 	protected void init(Properties props) throws BadRealmException, NoSuchRealmException {
-		if(!props.containsKey(JAAS_CONTEXT)) {
+		if (!props.containsKey(JAAS_CONTEXT)) {
 			throw new BadRealmException("mandatory property with name '" + JAAS_CONTEXT + "' not found!");
 		}
 		String jaasContext = props.getProperty(JAAS_CONTEXT);
