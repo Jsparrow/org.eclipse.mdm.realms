@@ -8,11 +8,13 @@
  * Contributors:
  * Sebastian Dirsch - initial configuration
  *******************************************************************************/ 
+group = 'org.eclipse.mdm'
+version = '5.0.0M1'
 
 description = 'mdm realms'
 apply plugin: 'maven'
 apply plugin: 'eclipse'
-version = '1.0.0'
+
 
 repositories {
 	mavenLocal()
@@ -20,7 +22,8 @@ repositories {
 }
 
 subprojects {
-	group = 'org.eclipse.mdm'
+	group = rootProject.group
+	version = rootProject.version
 
 	apply plugin: 'eclipse'
 	apply plugin: 'java'
