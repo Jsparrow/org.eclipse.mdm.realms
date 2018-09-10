@@ -9,7 +9,7 @@
  * Sebastian Dirsch - initial configuration
  *******************************************************************************/ 
 group = 'org.eclipse.mdm'
-version = '5.0.0M2'
+version = '5.0.0M3'
 
 description = 'mdm realms'
 apply plugin: 'maven'
