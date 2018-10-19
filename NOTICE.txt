@@ -37,7 +37,8 @@ org.eclipse.mdm.realms.git  A GlassFish realm using ODS authentication.
 
 ## Third-party Content
 
-no
+Gradle Wrapper (4.10.2)
+    * License: Apache License, 2.0  
 
 ## Cryptography
 
