@@ -121,7 +121,7 @@ public class LoginRealmModule implements LoginModule {
 
 				this.phase2Succeeded = true;
 			} else {
-				throw new LoginException("unable to connect '" + this.username + "'");
+				throw new LoginException(new StringBuilder().append("unable to connect '").append(this.username).append("'").toString());
 			}
 
 			return true;

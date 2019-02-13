@@ -47,7 +47,7 @@ public class LoginRealm extends AppservRealm {
 	@Override
 	protected void init(Properties props) throws BadRealmException, NoSuchRealmException {
 		if (!props.containsKey(JAAS_CONTEXT)) {
-			throw new BadRealmException("mandatory property with name '" + JAAS_CONTEXT + "' not found!");
+			throw new BadRealmException(new StringBuilder().append("mandatory property with name '").append(JAAS_CONTEXT).append("' not found!").toString());
 		}
 		String jaasContext = props.getProperty(JAAS_CONTEXT);
 		setProperty(JAAS_CONTEXT, jaasContext);
